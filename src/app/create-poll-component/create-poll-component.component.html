@@ -1,0 +1,60 @@
+<div className="Container">
+    <img src="assets/flat_logo.png" alt="Logo Simba" height="50px" [ngStyle]="{ 'marginBottom': '1rem' }"/>
+
+    <div class="card">
+        <p-toast></p-toast>
+        <p-steps [model]="items" [readonly]="true"></p-steps>
+    </div>
+    <div class="stepsdemo-content">
+        <p-card>
+            <ng-template pTemplate="title">
+                Informations
+            </ng-template>
+            <ng-template pTemplate="subtitle">
+                Entrez les informations sur le rendez-vous à planifier
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div class="p-fluid">
+                    <div class="p-field">
+                        <label for="titre">Titre de la réunion</label>
+                        <input #titre="ngModel" id="titre" type="text" required pInputText
+                            [(ngModel)]="personalInformation.titre"
+                            [ngClass]="{'p-invalid': (titre.invalid && submitted) || (titre.dirty && titre.invalid)}">
+                        <small *ngIf="(titre.invalid && submitted) || (titre.dirty && firstname.invalid)"
+                            class="p-error">Le titre est requis.</small>
+                    </div>
+                    <div class="p-field">
+                        <label for="lieu">Lieu de la réunion</label>
+                        <input #lieu="ngModel" id="lieu" type="text" required pInputText
+                            [(ngModel)]="personalInformation.lieu"
+                            [ngClass]="{'p-invalid': (lieu.invalid && submitted) || (lieu.dirty && lieu.invalid)}">
+                        <small class="p-error" *ngIf="(lieu.invalid && submitted )|| (lieu.dirty && lieu.invalid)">Le
+                            lieu est requis.</small>
+                    </div>
+                  <!--  <div class="p-field">
+                        <label for="desc">Description</label>
+                        <textarea #desc="ngModel" id="desc"  required pInputTextarea
+                            [(ngModel)]="personalInformation.desc"
+                            [ngClass]="{'p-invalid': (desc.invalid && submitted) || (desc.dirty && desc.invalid)}">
+                        <small class="p-error" *ngIf="(desc.invalid && submitted) || (desc.dirty && desc.invalid)">La description est requise.</small>
+                    </div>-->
+                    <div class="p-field">
+                        <label for="repas">Repas</label>
+                        <p-inputSwitch [(ngModel)]="personalInformation.repas"></p-inputSwitch>
+                    </div>
+
+                </div>
+            </ng-template>
+            <ng-template pTemplate="footer">
+                <div class="p-grid p-nogutter p-justify-end">
+                    <p-button label="Next" (onClick)="nextPage()" icon="pi pi-angle-right" iconPos="right"></p-button>
+                </div>
+            </ng-template>
+        </p-card>
+    </div>
+    <div class="stepsdemo-content">
+        <p-card>
+            <full-calendar [options]="options"></full-calendar>
+        </p-card>
+    </div>
+</div>
