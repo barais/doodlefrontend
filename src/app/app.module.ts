@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CardSmallComponentComponent } from './card-small-component/card-small-component.component';
@@ -19,14 +19,23 @@ import {InputSwitchModule} from 'primeng/inputswitch';
 import {CardModule} from 'primeng/card';
 import {ButtonModule} from 'primeng/button';
 import {InputTextModule} from 'primeng/inputtext';
+import {SelectButtonModule} from 'primeng/selectbutton';
+import {MenubarModule} from 'primeng/menubar';
+import {CheckboxModule} from 'primeng/checkbox';
 
 import dayGridPlugin from '@fullcalendar/daygrid'; // a plugin
 import interactionPlugin from '@fullcalendar/interaction'; // a plugin
 import timeGridPlugin from '@fullcalendar/timegrid';
 
-import { FullCalendarModule } from '@fullcalendar/angular'; // the main connector. must go first
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AnswerPollComponent } from './answer-poll/answer-poll.component';
+import { AdminPollComponent } from './admin-poll/admin-poll.component';
+import { DateagoPipe } from './dateago.pipe'; // the main connector. must go first
 
-
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+registerLocaleData(localeFr, 'fr');
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
   dayGridPlugin,
   interactionPlugin,
@@ -37,11 +46,15 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     AppComponent,
     CardSmallComponentComponent,
     HomeComponentComponent,
-    CreatePollComponentComponent
+    CreatePollComponentComponent,
+    AnswerPollComponent,
+    AdminPollComponent,
+    DateagoPipe
   ],
   imports: [
     BrowserModule,
     FormsModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     StepsModule,
@@ -49,13 +62,19 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     ToastModule,
     MessagesModule,
     MessageModule,
-    InputTextareaModule,
     InputSwitchModule,
     CardModule,
     ButtonModule,
-    InputTextModule
+    InputTextModule,
+    InputTextareaModule,
+    SelectButtonModule,
+    MenubarModule,
+    CheckboxModule,
+    NgbModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+
+
 })
 export class AppModule { }
