@@ -13,6 +13,7 @@ export interface Poll {
  title?: string;
  tlkURL?: string;
  updatedAt?: Date;
+ close ?: boolean;
 }
 
 export interface PollChoice {

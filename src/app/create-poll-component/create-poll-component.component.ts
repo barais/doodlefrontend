@@ -39,7 +39,7 @@ export class CreatePollComponentComponent implements OnInit {
   ngOnInit(): void {
 
     this.items = [{
-      label: 'Information pour le rendez vous',
+      label: 'Informations pour le rendez vous',
       command: () => {
         this.step = 0;
       }
