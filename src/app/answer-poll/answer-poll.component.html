@@ -82,14 +82,17 @@
                 <th *ngFor="let ev of events" style="text-align: center">{{ev.start | date:'H:mm'}} <BR>-<BR> {{ev.end | date:'H:mm'}}</th>
               </tr>
               <tr>
-                <th>3 participant(s)</th>
-                <th style="text-align: center">2</th>
-                <th style="text-align: center">1</th>
-                <th style="text-align: center">3</th>
+                <th><span>{{uniqueUsers.length + 1}} participant</span><span *ngIf="uniqueUsers.length > 0">s</span></th>
+                <th *ngFor="let pc of poll?.pollChoices" style="text-align: center">{{pc.users.length}}</th>
               </tr>
 
           </thead>
             <tbody>
+              <tr *ngFor="let u of userChoices | keyvalue">
+                <td><input type="text" [disabled]='true' pInputText [ngModel]="uniqueUsers | usernamePipe:u.key"></td>
+                <td *ngFor="let ev of events"  style="text-align: center"><p-checkbox  [disabled]='true' [binary]="true" [ngModel]="u.value | selecteddate4userPipe:u.key:ev" ></p-checkbox></td>
+              </tr>
+
               <tr>
                 <td><input #nomvotant="" id="nomvotant" type="text" required pInputText [(ngModel)]="personalInformation.nom"></td>
                 <td *ngFor="let ev of events" style="text-align: center"><p-checkbox  [binary]="true" (onChange)="updateEvent($event,ev )" [ngModel]="ev.extendedProps.selected" ></p-checkbox></td>

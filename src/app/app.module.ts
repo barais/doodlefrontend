@@ -35,6 +35,8 @@ import { DateagoPipe } from './dateago.pipe'; // the main connector. must go fir
 
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
+import { UsernamePipePipe } from './username-pipe.pipe';
+import { Selecteddate4userPipePipe } from './selecteddate4user-pipe.pipe';
 registerLocaleData(localeFr, 'fr');
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
   dayGridPlugin,
@@ -49,7 +51,9 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     CreatePollComponentComponent,
     AnswerPollComponent,
     AdminPollComponent,
-    DateagoPipe
+    DateagoPipe,
+    UsernamePipePipe,
+    Selecteddate4userPipePipe
   ],
   imports: [
     BrowserModule,

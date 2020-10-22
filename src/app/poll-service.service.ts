@@ -24,14 +24,19 @@ export class PollService {
 
   }
 
-  public updateChoice4user( cu: ChoiceUser): Observable<void>{
+  public updateChoice4user( cu: ChoiceUser): Observable<User>{
 
-    return this.http.post<void>('/api/poll/choiceuser/', cu);
+    return this.http.post<User>('/api/poll/choiceuser/', cu);
   }
 
   public addComment4Poll( slug: string, comment: PollCommentElement ): Observable<PollCommentElement>{
 
     return this.http.post<PollCommentElement>('/api/poll/comment/' + slug, comment);
+  }
+
+  selectEvent(choiceid: number): Observable<void> {
+    return this.http.post<void>('/api/poll/selectedchoice/' + choiceid, null);
+
   }
 
 

@@ -26,6 +26,7 @@ export interface PollChoice {
 export interface User {
  id?: number;
  username?: string;
+ mail?: string;
 }
 
 export interface ChoiceUser {

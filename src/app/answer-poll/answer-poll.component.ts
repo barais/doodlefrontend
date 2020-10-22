@@ -2,12 +2,11 @@ import { Component, OnInit, ViewChild, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { stringify } from 'querystring';
 import { PollService } from '../poll-service.service';
-import { Poll, ChoiceUser, PollCommentElement } from '../model/model';
+import { Poll, ChoiceUser, PollCommentElement, User, PollChoice } from '../model/model';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import frLocale from '@fullcalendar/core/locales/fr';
 import { MessageService } from 'primeng/api';
-import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-answer-poll',
@@ -38,7 +37,8 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
   events: EventInput[] = [];
   comment1 = '';
   commentdesc1 = '';
-
+  uniqueUsers: User[] = [];
+  userChoices: Map<number, PollChoice[]> = new Map();
   ngOnInit(): void {
     this.calendarortableoption = [
       { icon: 'pi pi-calendar', text: 'Calendrier', value: 'calendar' },
@@ -51,8 +51,15 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
         this.poll = p;
         const calendarApi = this.calendarComponent.getApi();
         // calendarApi.next();
-
+        this.uniqueUsers.splice(0, this.uniqueUsers.length);
         this.poll.pollChoices.forEach(pc => {
+          pc.users.forEach(user => {
+            if (this.uniqueUsers.filter(us => us.id === user.id).length  === 0 ){
+              this.uniqueUsers.push(user);
+              this.userChoices.set(user.id, []);
+            }
+          });
+
           const evt =
           {
             title: '',
@@ -68,6 +75,11 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
           };
           calendarApi.addEvent(evt, true);
           this.events.push(evt);
+        });
+        this.poll.pollChoices.forEach(pc => {
+          pc.users.forEach(us => {
+              this.userChoices.get(us.id).push(pc);
+          });
         });
 
       });
@@ -100,20 +112,22 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
 
       },
       eventClick: (info) => {
-        console.log(info.event.extendedProps.selected);
         if (info.event.extendedProps.selected) {
-          console.log(info.event);
           info.event.setExtendedProp('selected', false);
           const evt = this.events.filter(e => e.extendedProps.choiceid === info.event.extendedProps.choiceid).pop();
           evt.extendedProps.selected = false;
           evt.backgroundColor = 'red';
           info.event.setProp('backgroundColor', 'red');
+          this.poll.pollChoices.filter(pc => pc.id === evt.extendedProps.choiceid)[0].users.splice(-1, 1);
+
         } else {
           info.event.setExtendedProp('selected', true);
           const evt = this.events.filter(e => e.extendedProps.choiceid === info.event.extendedProps.choiceid).pop();
           evt.extendedProps.selected = true;
           evt.backgroundColor = 'green';
           info.event.setProp('backgroundColor', 'green');
+          this.poll.pollChoices.filter(pc => pc.id === evt.extendedProps.choiceid)[0].users.push({id: -1});
+
         }
 
         //        info.event.remove();
@@ -125,14 +139,16 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
 
 
   updateEvent($event: any, event: EventInput): void{
-    console.log($event.checked);
-    console.log(event);
 
     event.extendedProps.selected = $event.checked;
     if ($event.checked){
       event.backgroundColor = 'green';
+      this.poll.pollChoices.filter(pc => pc.id === event.extendedProps.choiceid)[0].users.push({id: -1});
+
     }else {
       event.backgroundColor = 'red';
+      this.poll.pollChoices.filter(pc => pc.id === event.extendedProps.choiceid)[0].users.splice(-1, 1);
+
 
     }
   }
@@ -175,7 +191,6 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
     if (this.personalInformation.nom && this.personalInformation.mail &&
       this.events.filter(e => e.extendedProps.selected).length > 0 &&
       (this.personalInformation.desc || !this.personalInformation.pref)) {
-      console.log(this.events);
       const cu: ChoiceUser = {
         username: this.personalInformation.nom,
         mail: this.personalInformation.mail,
@@ -183,6 +198,10 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
         choices: this.events.filter(e => e.extendedProps.selected).map(x => x.extendedProps.choiceid)
       };
       this.pollService.updateChoice4user(cu).subscribe(e => {
+      //  cu.choices.forEach(c => this.poll.pollChoices.filter( c1 => c1.id === c)[0].users.push(e));
+      //  if (this.uniqueUsers.filter(u1 => u1.id === e.id ).length === 0) {
+      //    this.uniqueUsers.push(e);
+       // }
         this.messageService.add({
           severity: 'success',
           summary: 'Données enregistrées',

@@ -19,7 +19,7 @@ const routes: Routes = [
     component: AnswerPollComponent
   },
   {
-    path: 'admin/::slugadminid',
+    path: 'admin/:slugadminid',
     component: AdminPollComponent
   }
 
