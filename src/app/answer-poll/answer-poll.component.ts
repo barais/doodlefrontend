@@ -82,14 +82,13 @@ export class AnswerPollComponent implements OnInit {
             resourceEditable: false,
             eventResizableFromStart: false,
             backgroundColor: 'red',
+            id: this.getUniqueId(8),
             extendedProps: {
               choiceid: pc.id,
               selected: false,
-              fullid  : ''
             },
           };
-          const eid = calendarApi.addEvent(evt, true).id;
-          evt.extendedProps.fullid = eid;
+          calendarApi.addEvent(evt, true);
           this.events.push(evt);
           this.allevents.push(evt);
 
@@ -248,14 +247,16 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
       const calendarApi = this.calendarComponent.getApi();
       if (res.eventdtos.length > 0) {
         this.eventsfromics.forEach(eid => {
-          const index =  this.allevents.indexOf(eid);
+          const index = this.allevents.indexOf(eid);
           if (index > -1) {
             this.allevents.splice(index, 1);
           }
-          calendarApi.getEventById(eid.extendedProps.fullid)?.remove();
+          calendarApi.getEventById(eid.id)?.remove();
         });
         this.eventsfromics = [];
       }
+      console.log(res);
+
       res.eventdtos.forEach(evtdto => {      // calendarApi.next();
         const evt1 =
         {
@@ -264,23 +265,39 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
           end: evtdto.endDate,
           resourceEditable: false,
           eventResizableFromStart: false,
+          id: this.getUniqueId(8),
+
           backgroundColor: 'blue',
           extendedProps: {
-            fromics: true,
-            fullid: ''
+            fromics: true
           },
 
 
         };
-        const eventId = calendarApi.addEvent(evt1, true).id;
+        const eventAPI = calendarApi.addEvent(evt1, true);
         this.eventsfromics.push(evt1);
         this.allevents.push(evt1);
-        evt1.extendedProps.fullid = eventId;
 
       });
+
+      const unselected = this.events.map(ev => ev.extendedProps.choiceid);
       res.selectedChoices.forEach(e => {
+        const index = unselected.indexOf(e);
+        if (index > -1) {
+          unselected.splice(index, 1);
+        }
         const evt1 = this.events.filter(ev => ev.extendedProps.choiceid === e)[0];
-        const evt2 = calendarApi.getEventById(evt1.extendedProps.fullid);
+
+        const evt2 = calendarApi.getEventById(evt1.id);
+        evt1.backgroundColor = 'red';
+        evt1.extendedProps.selected = false;
+        evt2.setProp('backgroundColor', 'red');
+//        this.poll.pollChoices.filter(pc => pc.id === evt1.extendedProps.choiceid)[0].users.push({ id: -1 });
+      });
+      unselected.forEach(e => {
+        const evt1 = this.events.filter(ev => ev.extendedProps.choiceid === e)[0];
+
+        const evt2 = calendarApi.getEventById(evt1.id);
         evt1.backgroundColor = 'green';
         evt1.extendedProps.selected = true;
         evt2.setProp('backgroundColor', 'green');
@@ -308,6 +325,16 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
       backdrop: 'static'
     });
     modalRef.componentInstance.poll = this.poll;
+  }
+
+  private getUniqueId(parts: number): string {
+    const stringArr = [];
+    for (let i = 0; i < parts; i++) {
+      // tslint:disable-next-line:no-bitwise
+      const S4 = (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+      stringArr.push(S4);
+    }
+    return stringArr.join('-');
   }
 
 
