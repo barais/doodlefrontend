@@ -8,8 +8,9 @@
 [ ] envoie de mail avec ics
 [X] Chargement ics externe dans la vue edit calendrier
 [X] Import ICS coté serveur et complétion automatique des dispos
-[ ] Test Chargement ics externe dans la vue edit calendrier
+[X] Test Chargement ics externe dans la vue edit calendrier
 [ ] Test Chargement user dans edit poll based on email
+[ ] ICS avec évènement à répétition
 
 [ ] Modification par un utilisateur des données déjà rentrées pour un poll
 [ ] Gestion du choix peut être

@@ -199,8 +199,8 @@ export class CreatePollComponentComponent implements OnInit {
   }
 
   nextPage1(): void {
-
-    if (this.poll.id === null) {
+    console.log(this.poll.id);
+    if (this.poll.id == null) {
       this.events.forEach(e => {
         this.poll.pollChoices.push({
           startDate: e.start as any,

@@ -17,7 +17,7 @@ import { ModalPollClosComponent } from '../modal-poll-clos/modal-poll-clos.compo
   providers: [MessageService, PollService, FullCalendarComponent, NgbModal]
 
 })
-export class AnswerPollComponent implements OnInit, AfterViewChecked {
+export class AnswerPollComponent implements OnInit {
 
   constructor(public messageService: MessageService,
     // tslint:disable-next-line:align
@@ -32,7 +32,7 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
     nom: '',
     mail: '',
     desc: '',
-    ics: 'ics',
+    ics: '',
     pref: false
   };
   hasics: false;
@@ -43,6 +43,9 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
   voeuxsoumis = false;
   commentsoumis = false;
   events: EventInput[] = [];
+  eventsfromics: EventInput[] = [];
+  allevents: EventInput[] = [];
+
   comment1 = '';
   commentdesc1 = '';
   uniqueUsers: User[] = [];
@@ -57,7 +60,7 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
       this.slugid = params.get('slugid');
       this.pollService.getPollBySlugId(this.slugid).subscribe(p => {
         this.poll = p;
-        if (this.poll.clos){
+        if (this.poll.clos) {
           this.openModal();
         }
         const calendarApi = this.calendarComponent.getApi();
@@ -65,7 +68,7 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
         this.uniqueUsers.splice(0, this.uniqueUsers.length);
         this.poll.pollChoices.forEach(pc => {
           pc.users.forEach(user => {
-            if (this.uniqueUsers.filter(us => us.id === user.id).length  === 0 ){
+            if (this.uniqueUsers.filter(us => us.id === user.id).length === 0) {
               this.uniqueUsers.push(user);
               this.userChoices.set(user.id, []);
             }
@@ -81,15 +84,19 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
             backgroundColor: 'red',
             extendedProps: {
               choiceid: pc.id,
-              selected: false
+              selected: false,
+              fullid  : ''
             },
           };
-          calendarApi.addEvent(evt, true);
+          const eid = calendarApi.addEvent(evt, true).id;
+          evt.extendedProps.fullid = eid;
           this.events.push(evt);
+          this.allevents.push(evt);
+
         });
         this.poll.pollChoices.forEach(pc => {
           pc.users.forEach(us => {
-              this.userChoices.get(us.id).push(pc);
+            this.userChoices.get(us.id).push(pc);
           });
         });
 
@@ -109,7 +116,8 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
            timeSheetEntry, jsEvent, ui, activeView
         );
       },*/
-      events: this.events,
+      //      events: this.events,
+      events: this.allevents,
       editable: false,
       droppable: false,
       //      selectMirror: true,
@@ -123,22 +131,24 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
 
       },
       eventClick: (info) => {
-        if (info.event.extendedProps.selected) {
-          info.event.setExtendedProp('selected', false);
-          const evt = this.events.filter(e => e.extendedProps.choiceid === info.event.extendedProps.choiceid).pop();
-          evt.extendedProps.selected = false;
-          evt.backgroundColor = 'red';
-          info.event.setProp('backgroundColor', 'red');
-          this.poll.pollChoices.filter(pc => pc.id === evt.extendedProps.choiceid)[0].users.splice(-1, 1);
+        if (!info.event.extendedProps.fromics) {
+          if (info.event.extendedProps.selected) {
+            info.event.setExtendedProp('selected', false);
+            const evt = this.events.filter(e => e.extendedProps.choiceid === info.event.extendedProps.choiceid).pop();
+            evt.extendedProps.selected = false;
+            evt.backgroundColor = 'red';
+            info.event.setProp('backgroundColor', 'red');
+            this.poll.pollChoices.filter(pc => pc.id === evt.extendedProps.choiceid)[0].users.splice(-1, 1);
 
-        } else {
-          info.event.setExtendedProp('selected', true);
-          const evt = this.events.filter(e => e.extendedProps.choiceid === info.event.extendedProps.choiceid).pop();
-          evt.extendedProps.selected = true;
-          evt.backgroundColor = 'green';
-          info.event.setProp('backgroundColor', 'green');
-          this.poll.pollChoices.filter(pc => pc.id === evt.extendedProps.choiceid)[0].users.push({id: -1});
+          } else {
+            info.event.setExtendedProp('selected', true);
+            const evt = this.events.filter(e => e.extendedProps.choiceid === info.event.extendedProps.choiceid).pop();
+            evt.extendedProps.selected = true;
+            evt.backgroundColor = 'green';
+            info.event.setProp('backgroundColor', 'green');
+            this.poll.pollChoices.filter(pc => pc.id === evt.extendedProps.choiceid)[0].users.push({ id: -1 });
 
+          }
         }
 
         //        info.event.remove();
@@ -149,22 +159,19 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
   }
 
 
-  updateEvent($event: any, event: EventInput): void{
+  updateEvent($event: any, event: EventInput): void {
 
     event.extendedProps.selected = $event.checked;
-    if ($event.checked){
+    if ($event.checked) {
       event.backgroundColor = 'green';
-      this.poll.pollChoices.filter(pc => pc.id === event.extendedProps.choiceid)[0].users.push({id: -1});
+      this.poll.pollChoices.filter(pc => pc.id === event.extendedProps.choiceid)[0].users.push({ id: -1 });
 
-    }else {
+    } else {
       event.backgroundColor = 'red';
       this.poll.pollChoices.filter(pc => pc.id === event.extendedProps.choiceid)[0].users.splice(-1, 1);
 
 
     }
-  }
-  ngAfterViewChecked(): void {
-
   }
 
   createComment(): void {
@@ -179,8 +186,9 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
         this.messageService.add({
           severity: 'success',
           summary: 'Données enregistrées',
-          detail: 'Merci pour ce commentaire'}
-          );
+          detail: 'Merci pour ce commentaire'
+        }
+        );
         this.commentsoumis = true;
       });
 
@@ -190,15 +198,13 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
       {
         severity: 'warn',
         summary: 'Données incomplètes',
-        detail: 'Veuillez remplir les champs requis'}
-        );
+        detail: 'Veuillez remplir les champs requis'
+      }
+    );
     this.csubmitted = true;
   }
 
   createReponse(): void {
-
-
-
     if (this.personalInformation.nom && this.personalInformation.mail &&
       this.events.filter(e => e.extendedProps.selected).length > 0 &&
       (this.personalInformation.desc || !this.personalInformation.pref)) {
@@ -210,15 +216,16 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
         choices: this.events.filter(e => e.extendedProps.selected).map(x => x.extendedProps.choiceid)
       };
       this.pollService.updateChoice4user(cu).subscribe(e => {
-      //  cu.choices.forEach(c => this.poll.pollChoices.filter( c1 => c1.id === c)[0].users.push(e));
-      //  if (this.uniqueUsers.filter(u1 => u1.id === e.id ).length === 0) {
-      //    this.uniqueUsers.push(e);
-       // }
+        //  cu.choices.forEach(c => this.poll.pollChoices.filter( c1 => c1.id === c)[0].users.push(e));
+        //  if (this.uniqueUsers.filter(u1 => u1.id === e.id ).length === 0) {
+        //    this.uniqueUsers.push(e);
+        // }
         this.messageService.add({
           severity: 'success',
           summary: 'Données enregistrées',
-          detail: 'Merci pour votre participation'}
-          );
+          detail: 'Merci pour votre participation'
+        }
+        );
         this.voeuxsoumis = true;
       });
       return;
@@ -227,20 +234,68 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
       {
         severity: 'warn',
         summary: 'Données incomplètes',
-        detail: 'Veuillez remplir les champs requis et sélectioner au moins une date'}
-        );
+        detail: 'Veuillez remplir les champs requis et sélectioner au moins une date'
+      }
+    );
     this.submitted = true;
-    // http://localhost:4200/answer/xCOAt3obeVkO2KG2J_ZsxahF
 
   }
 
   getICS(): void {
 
-    console.log('pass par la');
-    console.log(this.personalInformation.ics);
     this.pollService.getICS(this.slugid, this.personalInformation.ics).subscribe(res => {
-      console.log(res);
-    });
+
+      const calendarApi = this.calendarComponent.getApi();
+      if (res.eventdtos.length > 0) {
+        this.eventsfromics.forEach(eid => {
+          const index =  this.allevents.indexOf(eid);
+          if (index > -1) {
+            this.allevents.splice(index, 1);
+          }
+          calendarApi.getEventById(eid.extendedProps.fullid)?.remove();
+        });
+        this.eventsfromics = [];
+      }
+      res.eventdtos.forEach(evtdto => {      // calendarApi.next();
+        const evt1 =
+        {
+          title: evtdto.description,
+          start: evtdto.startDate,
+          end: evtdto.endDate,
+          resourceEditable: false,
+          eventResizableFromStart: false,
+          backgroundColor: 'blue',
+          extendedProps: {
+            fromics: true,
+            fullid: ''
+          },
+
+
+        };
+        const eventId = calendarApi.addEvent(evt1, true).id;
+        this.eventsfromics.push(evt1);
+        this.allevents.push(evt1);
+        evt1.extendedProps.fullid = eventId;
+
+      });
+      res.selectedChoices.forEach(e => {
+        const evt1 = this.events.filter(ev => ev.extendedProps.choiceid === e)[0];
+        const evt2 = calendarApi.getEventById(evt1.extendedProps.fullid);
+        evt1.backgroundColor = 'green';
+        evt1.extendedProps.selected = true;
+        evt2.setProp('backgroundColor', 'green');
+        this.poll.pollChoices.filter(pc => pc.id === evt1.extendedProps.choiceid)[0].users.push({ id: -1 });
+      });
+    }, (err) => {
+      this.messageService.add(
+        {
+          severity: 'warn',
+          summary: 'Ne peut récupérer l\'agenda à partir de l\'adresse de l\'ics',
+          detail: 'Une erreur s\'est produite au moment de la récupération de l\'agenda'
+        }
+      );
+    }
+    );
 
   }
 

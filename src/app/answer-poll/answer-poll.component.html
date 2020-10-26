@@ -54,7 +54,7 @@
           <input #mail="ngModel" id="ics" type="text"  pInputText (change)="getICS()" [(ngModel)]="personalInformation.ics">
         </div>
         <div *ngIf="poll?.has_meal" class="p-field">
-          <label for="repas">Avez vous des préférences alimentaires ?</label>
+          <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: 1rem;font-weight: normal;">Avez vous des préférences alimentaires ?</p>
           <p-inputSwitch [(ngModel)]="personalInformation.pref"></p-inputSwitch>
         </div>
         <div *ngIf="personalInformation?.pref" class="p-field">

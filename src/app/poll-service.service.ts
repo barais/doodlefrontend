@@ -11,6 +11,7 @@ export class PollService {
   constructor(private http: HttpClient) { }
 
   public createPoll(p: Poll): Observable<Poll> {
+    console.log('create poll');
     return this.http.post<Poll>('/api/poll', p);
   }
 
@@ -45,7 +46,7 @@ export class PollService {
   }
 
   getICS(slug: string, ics: string): Observable<EventDTOAndSelectedChoice> {
-    return this.http.get<EventDTOAndSelectedChoice>('/api/ics/polls/' + slug + '/' + ics);
+    return this.http.get<EventDTOAndSelectedChoice>('/api/ics/polls/' + slug + '/' + btoa(ics));
   }
 
 
