@@ -6,6 +6,7 @@ export interface Poll {
  location?: string;
  padURL?: string;
  pollChoices?: PollChoice[];
+ selectedChoice ?: PollChoice;
  pollComments?: PollCommentElement[];
  pollMealPreferences?: PollCommentElement[];
  slug?: string;
@@ -13,7 +14,7 @@ export interface Poll {
  title?: string;
  tlkURL?: string;
  updatedAt?: Date;
- close ?: boolean;
+ clos ?: boolean;
 }
 
 export interface PollChoice {
@@ -33,6 +34,7 @@ export interface ChoiceUser {
   username?: string;
   mail?: string;
   pref?: string;
+  ics?: string;
   choices?: number[];
  }
 
@@ -40,4 +42,16 @@ export interface PollCommentElement {
  content?: string;
  id?: number;
  auteur?: string;
+}
+
+export interface EventDTO{
+  startDate?: Date;
+  endDate?: Date;
+  description?: string;
+}
+
+
+export interface EventDTOAndSelectedChoice {
+  eventdtos?: EventDTO[];
+  selectedChoices?: number[];
 }

@@ -7,17 +7,23 @@ import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import frLocale from '@fullcalendar/core/locales/fr';
 import { MessageService } from 'primeng/api';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalPollClosComponent } from '../modal-poll-clos/modal-poll-clos.component';
 
 @Component({
   selector: 'app-answer-poll',
   templateUrl: './answer-poll.component.html',
   styleUrls: ['./answer-poll.component.css'],
-  providers: [MessageService, PollService, FullCalendarComponent]
+  providers: [MessageService, PollService, FullCalendarComponent, NgbModal]
 
 })
 export class AnswerPollComponent implements OnInit, AfterViewChecked {
 
-  constructor(public messageService: MessageService, private actRoute: ActivatedRoute, private pollService: PollService) { }
+  constructor(public messageService: MessageService,
+    // tslint:disable-next-line:align
+    private actRoute: ActivatedRoute, private pollService: PollService,
+    // tslint:disable-next-line:align
+    private modalService: NgbModal) { }
   slugid: string;
   poll: Poll;
   calendarortableoption: any[];
@@ -26,8 +32,10 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
     nom: '',
     mail: '',
     desc: '',
+    ics: 'ics',
     pref: false
   };
+  hasics: false;
   options: CalendarOptions;
   @ViewChild('calendar') calendarComponent: FullCalendarComponent;
   submitted = false;
@@ -49,6 +57,9 @@ export class AnswerPollComponent implements OnInit, AfterViewChecked {
       this.slugid = params.get('slugid');
       this.pollService.getPollBySlugId(this.slugid).subscribe(p => {
         this.poll = p;
+        if (this.poll.clos){
+          this.openModal();
+        }
         const calendarApi = this.calendarComponent.getApi();
         // calendarApi.next();
         this.uniqueUsers.splice(0, this.uniqueUsers.length);
@@ -195,6 +206,7 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
         username: this.personalInformation.nom,
         mail: this.personalInformation.mail,
         pref: this.personalInformation.desc,
+        ics: this.personalInformation.ics,
         choices: this.events.filter(e => e.extendedProps.selected).map(x => x.extendedProps.choiceid)
       };
       this.pollService.updateChoice4user(cu).subscribe(e => {
@@ -220,6 +232,27 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
     this.submitted = true;
     // http://localhost:4200/answer/xCOAt3obeVkO2KG2J_ZsxahF
 
+  }
+
+  getICS(): void {
+
+    console.log('pass par la');
+    console.log(this.personalInformation.ics);
+    this.pollService.getICS(this.slugid, this.personalInformation.ics).subscribe(res => {
+      console.log(res);
+    });
+
+  }
+
+
+  openModal(): void {
+    const modalRef = this.modalService.open(ModalPollClosComponent, {
+      beforeDismiss: () => false,
+      centered: true,
+      windowClass: 'lgModal',
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.poll = this.poll;
   }
 
 

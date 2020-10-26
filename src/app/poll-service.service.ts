@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Poll, PollChoice, User, ChoiceUser, PollCommentElement } from './model/model';
+import { Poll, PollChoice, User, ChoiceUser, PollCommentElement, EventDTOAndSelectedChoice } from './model/model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -12,6 +12,11 @@ export class PollService {
 
   public createPoll(p: Poll): Observable<Poll> {
     return this.http.post<Poll>('/api/poll', p);
+  }
+
+
+  public updtatePoll(p: Poll): Observable<Poll> {
+    return this.http.put<Poll>('/api/poll/update', p);
   }
 
 
@@ -37,6 +42,10 @@ export class PollService {
   selectEvent(choiceid: number): Observable<void> {
     return this.http.post<void>('/api/poll/selectedchoice/' + choiceid, null);
 
+  }
+
+  getICS(slug: string, ics: string): Observable<EventDTOAndSelectedChoice> {
+    return this.http.get<EventDTOAndSelectedChoice>('/api/ics/polls/' + slug + '/' + ics);
   }
 
 

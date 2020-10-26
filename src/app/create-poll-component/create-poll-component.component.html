@@ -18,7 +18,7 @@
                     <div class="p-field">
                         <label for="titre">Titre de la réunion</label>
                         <input #titre="ngModel" id="titre" type="text" required pInputText
-                            [(ngModel)]="personalInformation.titre"
+                            [(ngModel)]="poll.title"
                             [ngClass]="{'p-invalid': (titre.invalid && submitted) || (titre.dirty && titre.invalid)}">
                         <small *ngIf="(titre.invalid && submitted) || (titre.dirty && titre.invalid)"
                             class="p-error">Le titre est requis.</small>
@@ -26,7 +26,7 @@
                     <div class="p-field">
                         <label for="lieu">Lieu de la réunion</label>
                         <input #lieu="ngModel" id="lieu" type="text" required pInputText
-                            [(ngModel)]="personalInformation.lieu"
+                            [(ngModel)]="poll.location"
                             [ngClass]="{'p-invalid': (lieu.invalid && submitted) || (lieu.dirty && lieu.invalid)}">
                         <small class="p-error" *ngIf="(lieu.invalid && submitted )|| (lieu.dirty && lieu.invalid)">Le
                             lieu est requis.</small>
@@ -34,14 +34,18 @@
                    <div class="p-field">
                         <label for="desc">Description</label>
                         <textarea #desc="ngModel" id="desc"  required pInputTextarea
-                            [(ngModel)]="personalInformation.desc"
+                            [(ngModel)]="poll.description"
                             [ngClass]="{'p-invalid': (desc.invalid && submitted) || (desc.dirty && desc.invalid)}"></textarea>
                         <small class="p-error" *ngIf="(desc.invalid && submitted) || (desc.dirty && desc.invalid)">La description est requise.</small>
                     </div>
                     <div class="p-field">
-                        <label for="repas">Repas</label>
-                        <p-inputSwitch [(ngModel)]="personalInformation.repas"></p-inputSwitch>
+                        <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: 1rem;font-weight: normal;">Repas</p>
+                        <p-inputSwitch [ariaLabelledBy]="'repas'"  #repas="ngModel" id="repas" [(ngModel)]="poll.has_meal"></p-inputSwitch>
                     </div>
+                    <div *ngIf="poll?.id" class="p-field">
+                      <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: 1rem;font-weight: normal;">Sondage clos</p>
+                        <p-inputSwitch #clos="ngModel" id="clos" [(ngModel)]="poll.clos"></p-inputSwitch>
+                  </div>
 
                 </div>
             </ng-template>

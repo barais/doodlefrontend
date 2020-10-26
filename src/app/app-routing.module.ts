@@ -15,6 +15,10 @@ const routes: Routes = [
     component: CreatePollComponentComponent
   },
   {
+    path: 'update/:slugadminid',
+    component: CreatePollComponentComponent
+  },
+  {
     path: 'answer/:slugid',
     component: AnswerPollComponent
   },
