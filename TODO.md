@@ -16,7 +16,7 @@
 [X] Réintégration export Excel
 [X] Affichage TalTo et Pad si not null
 [X] Affichage commentaire
-[ ] Test Chargement user dans edit poll based on email
+[ ] Test etherpad client
 [ ] envoie de mail avec ics
 [ ] Modification par un utilisateur des données déjà rentrées pour un poll
 [ ] Gestion du choix peut être (relation suppléméntaire entre choice et user)
