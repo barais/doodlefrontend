@@ -1,5 +1,6 @@
 <div class="Container">
   <img src="assets/flat_logo.png" alt="Logo Simba" height="50px" [ngStyle]="{ 'marginBottom': '1rem' }" />
+  <app-top-bar [slug]="poll?.slug" [padURL]="poll?.padURL" [talkToURL]="poll?.tlkURL" ></app-top-bar>
 
 
   <p-card>

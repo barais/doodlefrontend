@@ -11,12 +11,14 @@
 [X] ICS avec évènement à répétition
 [X] Date sur plusieurs jours
 [X] Date journée entière
-[ ] Menu dans la vue admin pour edit, export
+[X] Menu dans la vue admin pour edit, export
+[X] Réintégration etherpad avec prop dans le fichier de conf
+[X] Réintégration export Excel
+[X] Affichage TalTo et Pad si not null
+[ ] Affichage commentaire
 [ ] Test Chargement user dans edit poll based on email
 [ ] envoie de mail avec ics
-[ ] Réintégration etherpad avec prop dans le fichier de conf
-[ ] Réintégration export Excel
 
 [ ] Modification par un utilisateur des données déjà rentrées pour un poll
-[ ] Gestion du choix peut être
+[ ] Gestion du choix peut être (relation suppléméntaire entre choice et user)
 [ ] Vue mensuel
