@@ -21,11 +21,16 @@ export class AdminPollComponent implements OnInit {
   events: EventInput[] = [];
   uniqueUsers: User[] = [];
   userChoices: Map<number, PollChoice[]> = new Map();
+  comments: PollCommentElement[];
+
   ngOnInit(): void {
     this.actRoute.paramMap.subscribe(params => {
       this.slugid = params.get('slugadminid');
       this.pollService.getPollBySlugAdminId(this.slugid).subscribe(p => {
         this.poll = p;
+        if (p != null){
+          this.pollService.getComentsBySlugId(this.poll?.slug).subscribe(cs => this.comments = cs);
+        }
         this.uniqueUsers.splice(0, this.uniqueUsers.length);
         this.poll.pollChoices.forEach(pc => {
           pc.users.forEach(user => {

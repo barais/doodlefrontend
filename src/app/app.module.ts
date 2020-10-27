@@ -39,6 +39,7 @@ import { UsernamePipePipe } from './username-pipe.pipe';
 import { Selecteddate4userPipePipe } from './selecteddate4user-pipe.pipe';
 import { ModalPollClosComponent } from './modal-poll-clos/modal-poll-clos.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
+import { ShowCommentsComponent } from './show-comments/show-comments.component';
 registerLocaleData(localeFr, 'fr');
 FullCalendarModule.registerPlugins([ // register FullCalendar plugins
   dayGridPlugin,
@@ -57,7 +58,8 @@ FullCalendarModule.registerPlugins([ // register FullCalendar plugins
     UsernamePipePipe,
     Selecteddate4userPipePipe,
     ModalPollClosComponent,
-    TopBarComponent
+    TopBarComponent,
+    ShowCommentsComponent
   ],
   imports: [
     BrowserModule,

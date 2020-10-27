@@ -86,6 +86,7 @@
     </ng-template>
     <ng-template pTemplate="footer">
 
+      <app-show-comments *ngIf="poll" [comments]="comments"></app-show-comments>
 
     </ng-template>
   </p-card>

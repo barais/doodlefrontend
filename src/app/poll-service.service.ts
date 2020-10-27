@@ -25,6 +25,10 @@ export class PollService {
     return this.http.get<Poll>('/api/poll/slug/' + slugId);
   }
 
+  public getComentsBySlugId(slugId: string): Observable<PollCommentElement[]>{
+    return this.http.get<PollCommentElement[]>('/api/polls/' + slugId + '/comments');
+  }
+
   public getPollBySlugAdminId(slugId: string): Observable<Poll>{
     return this.http.get<Poll>('/api/poll/aslug/' + slugId);
 

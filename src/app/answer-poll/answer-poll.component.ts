@@ -45,6 +45,9 @@ export class AnswerPollComponent implements OnInit {
   events: EventInput[] = [];
   eventsfromics: EventInput[] = [];
   allevents: EventInput[] = [];
+  loadics = false;
+  loademail = false;
+  comments: PollCommentElement[];
 
   comment1 = '';
   commentdesc1 = '';
@@ -56,10 +59,14 @@ export class AnswerPollComponent implements OnInit {
       { icon: 'pi pi-table', text: 'Tableau', value: 'table' },
     ];
 
+
     this.actRoute.paramMap.subscribe(params => {
       this.slugid = params.get('slugid');
       this.pollService.getPollBySlugId(this.slugid).subscribe(p => {
         this.poll = p;
+        this.pollService.getComentsBySlugId(this.slugid).subscribe(cs => this.comments = cs);
+
+
         if (this.poll.clos) {
           this.openModal();
         }
@@ -188,6 +195,7 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
           detail: 'Merci pour ce commentaire'
         }
         );
+        this.pollService.getComentsBySlugId(this.poll?.slug).subscribe(cs => this.comments = cs);
         this.commentsoumis = true;
       });
 
@@ -241,8 +249,9 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
   }
 
   getICS(): void {
-
+    this.loadics = true;
     this.pollService.getICS(this.slugid, this.personalInformation.ics).subscribe(res => {
+      this.loadics = false;
 
       const calendarApi = this.calendarComponent.getApi();
       if (res.eventdtos.length > 0) {
@@ -304,6 +313,8 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
         this.poll.pollChoices.filter(pc => pc.id === evt1.extendedProps.choiceid)[0].users.push({ id: -1 });
       });
     }, (err) => {
+      this.loadics = false;
+
       this.messageService.add(
         {
           severity: 'warn',
@@ -327,6 +338,9 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
     modalRef.componentInstance.poll = this.poll;
   }
 
+  getUserFromMail(): void {
+  }
+
   private getUniqueId(parts: number): string {
     const stringArr = [];
     for (let i = 0; i < parts; i++) {
@@ -336,6 +350,7 @@ eventDragStop: (timeSheetEntry, jsEvent, ui, activeView) => {
     }
     return stringArr.join('-');
   }
+
 
 
 }
