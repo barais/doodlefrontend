@@ -16,9 +16,12 @@
 [X] Réintégration export Excel
 [X] Affichage TalTo et Pad si not null
 [X] Affichage commentaire
-[ ] Chargement ICS dans la vue createPoll
+[X] envoie de mail avec ics
+[X] Test envoi de mail avec ics à la cloture du poll
+[X] Figé le poll séléctionné quand poll séléction date poll validé
+[X] Chargement ICS dans la vue createPoll
 [ ] Test etherpad client
-[ ] envoie de mail avec ics
+
 [ ] Modification par un utilisateur des données déjà rentrées pour un poll
 [ ] Gestion du choix peut être (relation suppléméntaire entre choice et user)
 [ ] DSL pour la sélection automatique des plages libres à la création d'un poll

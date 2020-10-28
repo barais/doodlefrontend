@@ -27,8 +27,14 @@ export class CreatePollComponentComponent implements OnInit {
   poll: Poll = {};
 
   events: EventInput[] = [];
+  eventsfromics: EventInput[] = [];
+  allevents: EventInput[] = [];
+
 
   calendarComponent: FullCalendarComponent;
+  hasics = false;
+  loadics = false;
+  ics: string;
 
   @ViewChild('calendar') set content(content: FullCalendarComponent) {
     if (content) { // initially setter gets called with undefined
@@ -101,15 +107,18 @@ export class CreatePollComponentComponent implements OnInit {
           end: selectionInfo.end,
           resourceEditable: true,
           eventResizableFromStart: true,
+          id: this.getUniqueId(8),
+
           extendedProps: {
-            tmpId: this.getUniqueId(8)
+//            tmpId: this.getUniqueId(8)
           },
         };
         calendarApi.addEvent(evt, true);
         this.events.push(evt);
+        this.allevents.push(evt);
       },
 
-      events: this.events,
+      events: this.allevents,
       editable: true,
       droppable: true,
       //      selectMirror: true,
@@ -123,27 +132,29 @@ export class CreatePollComponentComponent implements OnInit {
 
       },
       eventDrop: (info) => {
-        console.log('eventDrop');
-        console.log(info.event);
-        const evt = this.events.filter(e => e.extendedProps.tmpId === info.event.extendedProps.tmpId).pop();
+        const evt = this.events.filter(e => e.id === info.event.id).pop();
         evt.start = info.event.start;
         evt.end = info.event.end;
       },
       eventResize: (info) => {
-        console.log('eventResize');
-        console.log(info);
-        const evt = this.events.filter(e => e.extendedProps.tmpId === info.event.extendedProps.tmpId).pop();
+        const evt = this.events.filter(e => e.id === info.event.id).pop();
         const index = this.events.indexOf(evt);
         evt.start = info.event.start;
         evt.end = info.event.end;
       },
       eventClick: (info) => {
-        const evt = this.events.filter(e => e.extendedProps.tmpId === info.event.extendedProps.tmpId).pop();
+        const evt = this.events.filter(e => e.id === info.event.id).pop();
+        if (evt != null){
         const index = this.events.indexOf(evt);
         if (index > -1) {
           this.events.splice(index, 1);
         }
+        const index1 = this.allevents.indexOf(evt);
+        if (index1 > -1) {
+          this.allevents.splice(index1, 1);
+        }
         info.event.remove();
+      }
 
       },
       validRange: {
@@ -278,4 +289,86 @@ export class CreatePollComponentComponent implements OnInit {
 
   }
 
+
+  getICS(): void {
+    this.loadics = true;
+    this.pollService.getICS(this.slugid, this.ics).subscribe(res => {
+      this.loadics = false;
+
+      const calendarApi = this.calendarComponent.getApi();
+      if (res.eventdtos.length > 0) {
+        this.eventsfromics.forEach(eid => {
+          const index = this.allevents.indexOf(eid);
+          if (index > -1) {
+            this.allevents.splice(index, 1);
+          }
+          calendarApi.getEventById(eid.id)?.remove();
+        });
+        this.eventsfromics = [];
+      }
+      console.log(res);
+
+      res.eventdtos.forEach(evtdto => {      // calendarApi.next();
+        const evt1 =
+        {
+          title: evtdto.description,
+          start: evtdto.startDate,
+          end: evtdto.endDate,
+          resourceEditable: false,
+          editable: false,
+          droppable: false,
+          selectable: false,
+          eventResizableFromStart: false,
+          id: this.getUniqueId(8),
+
+          backgroundColor: 'red',
+          extendedProps: {
+            fromics: true
+          },
+
+
+        };
+        const eventAPI = calendarApi.addEvent(evt1, true);
+        this.eventsfromics.push(evt1);
+        this.allevents.push(evt1);
+
+      });
+
+      const unselected = this.events.map(ev => ev.extendedProps.choiceid);
+      res.selectedChoices.forEach(e => {
+        const index = unselected.indexOf(e);
+        if (index > -1) {
+          unselected.splice(index, 1);
+        }
+        const evt1 = this.events.filter(ev => ev.extendedProps.choiceid === e)[0];
+
+        const evt2 = calendarApi.getEventById(evt1.id);
+        evt1.backgroundColor = 'red';
+        evt1.extendedProps.selected = false;
+        evt2.setProp('backgroundColor', 'red');
+//        this.poll.pollChoices.filter(pc => pc.id === evt1.extendedProps.choiceid)[0].users.push({ id: -1 });
+      });
+      unselected.forEach(e => {
+        const evt1 = this.events.filter(ev => ev.extendedProps.choiceid === e)[0];
+
+        const evt2 = calendarApi.getEventById(evt1.id);
+        evt1.backgroundColor = 'green';
+        evt1.extendedProps.selected = true;
+        evt2.setProp('backgroundColor', 'green');
+        this.poll.pollChoices.filter(pc => pc.id === evt1.extendedProps.choiceid)[0].users.push({ id: -1 });
+      });
+    }, (err) => {
+      this.loadics = false;
+
+      this.messageService.add(
+        {
+          severity: 'warn',
+          summary: 'Ne peut récupérer l\'agenda à partir de l\'adresse de l\'ics',
+          detail: 'Une erreur s\'est produite au moment de la récupération de l\'agenda'
+        }
+      );
+    }
+    );
+
+  }
 }

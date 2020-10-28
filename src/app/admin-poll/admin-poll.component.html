@@ -74,7 +74,7 @@
 
               <tr>
                 <td></td>
-                <td *ngFor="let ev of events" style="text-align: center"><p-button   (onClick)="selectEvent($event,ev )"  >sélectionner cette date</p-button></td>
+                <td *ngFor="let ev of events" style="text-align: center"><p-button [disabled]="poll?.clos"  (onClick)="selectEvent($event,ev )"  >sélectionner cette date</p-button></td>
               </tr>
             </tbody>
           </table>

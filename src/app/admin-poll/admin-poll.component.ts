@@ -75,6 +75,7 @@ export class AdminPollComponent implements OnInit {
         summary: 'Données enregistrées',
         detail: 'Le sondage est maintenant close'}
         );
+      this.poll.clos = true;
     }, (error) => {
       this.messageService.add(
         {
