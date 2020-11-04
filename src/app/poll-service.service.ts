@@ -12,7 +12,7 @@ export class PollService {
 
   public createPoll(p: Poll): Observable<Poll> {
     console.log('create poll');
-    return this.http.post<Poll>('/api/poll', p);
+    return this.http.post<Poll>('/api/polls', p);
   }
 
 

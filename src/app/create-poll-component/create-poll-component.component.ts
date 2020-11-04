@@ -220,8 +220,8 @@ export class CreatePollComponentComponent implements OnInit {
       });
       this.pollService.createPoll(this.poll).subscribe(p1 => {
         this.poll = p1;
-        this.urlsondage = 'http://localhost:4200/answer/' + p1.slug;
-        this.urlsondageadmin = 'http://localhost:4200/admin/' + p1.slugAdmin;
+        this.urlsondage = window.location.protocol + '//' + window.location.host + '/answer/' + p1.slug;
+        this.urlsondageadmin = window.location.protocol + '//' + window.location.host + '/admin/' + p1.slugAdmin;
         this.urlsalon = p1.tlkURL;
         this.urlpad = p1.padURL;
         this.step = 2;

@@ -26,3 +26,4 @@
 [ ] Gestion du choix peut être (relation suppléméntaire entre choice et user)
 [ ] DSL pour la sélection automatique des plages libres à la création d'un poll
 [ ] Vue mensuel
+[ ] Sécurité SlugAdmin envoyé uniquement 
